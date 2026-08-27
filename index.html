@@ -51,7 +51,9 @@
 
       .hero-copy {
         align-content: center;
-        background: linear-gradient(90deg, rgba(255, 250, 240, 0.94), rgba(255, 250, 240, 0.72)), radial-gradient(circle at 70% 32%, #dcece5 0 18%, transparent 19%), linear-gradient(135deg, #fff7e8, #e8f1ff);
+        background:
+          linear-gradient(90deg, rgba(255, 250, 240, 0.92), rgba(255, 250, 240, 0.58)),
+          url("./hero-background.jpg") center / cover;
         min-height: 420px;
         padding: clamp(28px, 5vw, 56px);
       }
@@ -114,14 +116,10 @@
       }
 
       .button-art {
-        align-items: center;
-        background: linear-gradient(135deg, #f4b06b, #fff4d6);
+        background: url("./draw-button.jpg") center / cover;
         border-radius: 6px;
-        display: inline-flex;
-        font-family: "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
-        font-size: 25px;
+        display: block;
         height: 46px;
-        justify-content: center;
         width: 46px;
       }
 
@@ -422,7 +420,7 @@
           <h1>抱佛脚事务所</h1>
           <p class="hero-text">随机掉落。</p>
           <button class="primary-button" id="drawButton" type="button">
-            <span class="button-art" aria-hidden="true">🍞</span>
+            <span class="button-art" aria-hidden="true"></span>
             <span id="drawButtonText">立刻开抽</span>
           </button>
           <p class="status-line" id="statusLine">正在检查她有没有偷偷抽过</p>
@@ -460,7 +458,7 @@
     </main>
 
     <script>
-      const STORAGE_KEY = "tutu-cram-lottery-github-v1";
+      const STORAGE_KEY = "tutu-cram-lottery-local-file-v1";
       const TOTAL_PROBABILITY = 100;
       const SPIN_DURATION_MS = 10000;
       const SPIN_TURNS = 6;
