@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>抱佛脚事务所</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #fbf7f2;
+        color: #27211d;
+        font-family:
+          Arial,
+          "PingFang SC",
+          "Microsoft YaHei",
+          sans-serif;
+      }
+
+      button {
+        border: 0;
+        cursor: pointer;
+        font: inherit;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.52;
+      }
+
+      .hero-shell {
+        display: grid;
+        gap: 28px;
+        grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+        margin: 0 auto;
+        max-width: 1160px;
+        min-height: 58vh;
+        padding: 52px 24px 24px;
+      }
+
+      .hero-copy,
+      .progress-panel,
+      .tool-panel {
+        border: 1px solid rgba(39, 33, 29, 0.12);
+        border-radius: 8px;
+        box-shadow: 0 24px 70px rgba(50, 39, 28, 0.1);
+      }
+
+      .hero-copy {
+        align-content: center;
+        background: linear-gradient(90deg, rgba(255, 250, 240, 0.94), rgba(255, 250, 240, 0.72)), radial-gradient(circle at 70% 32%, #dcece5 0 18%, transparent 19%), linear-gradient(135deg, #fff7e8, #e8f1ff);
+        min-height: 420px;
+        padding: clamp(28px, 5vw, 56px);
+      }
+
+      .eyebrow {
+        color: #85624e;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0;
+        margin: 0 0 12px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        font-size: clamp(42px, 7vw, 84px);
+        font-weight: 900;
+        letter-spacing: 0;
+        line-height: 0.98;
+        margin-bottom: 22px;
+        max-width: 720px;
+      }
+
+      h2 {
+        font-size: 25px;
+        font-weight: 850;
+        letter-spacing: 0;
+        margin-bottom: 0;
+      }
+
+      h3 {
+        font-size: 16px;
+        margin-bottom: 12px;
+      }
+
+      .hero-text {
+        color: #5d514a;
+        font-size: 18px;
+        line-height: 1.65;
+        margin-bottom: 28px;
+      }
+
+      .primary-button {
+        align-items: center;
+        background: #2f6f61;
+        border-radius: 8px;
+        color: #fff;
+        display: inline-flex;
+        font-weight: 800;
+        gap: 12px;
+        justify-content: center;
+        min-height: 58px;
+        overflow: hidden;
+        padding: 6px 18px 6px 7px;
+      }
+
+      .button-art {
+        align-items: center;
+        background: linear-gradient(135deg, #f4b06b, #fff4d6);
+        border-radius: 6px;
+        display: inline-flex;
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+        font-size: 25px;
+        height: 46px;
+        justify-content: center;
+        width: 46px;
+      }
+
+      .status-line {
+        color: #54463f;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 14px 0 0;
+      }
+
+      .progress-panel {
+        align-content: center;
+        background: #fffdf8;
+        min-height: 420px;
+        overflow: hidden;
+        padding: 26px;
+      }
+
+      .wheel-stage {
+        display: grid;
+        margin: 0 auto 24px;
+        max-width: 330px;
+        place-items: center;
+        position: relative;
+      }
+
+      .wheel-pointer {
+        border-left: 18px solid transparent;
+        border-right: 18px solid transparent;
+        border-top: 30px solid #27211d;
+        filter: drop-shadow(0 8px 10px rgba(39, 33, 29, 0.18));
+        left: 50%;
+        position: absolute;
+        top: -2px;
+        transform: translateX(-50%);
+        z-index: 4;
+      }
+
+      .prize-wheel {
+        align-items: center;
+        aspect-ratio: 1;
+        border: 12px solid #fff;
+        border-radius: 999px;
+        box-shadow:
+          0 22px 44px rgba(39, 33, 29, 0.16),
+          inset 0 0 0 2px rgba(39, 33, 29, 0.12);
+        display: flex;
+        justify-content: center;
+        max-width: 310px;
+        position: relative;
+        transition: transform 10s cubic-bezier(0.06, 0.84, 0.08, 1);
+        width: 100%;
+      }
+
+      .prize-wheel::before {
+        background: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.22), transparent 34%);
+        border-radius: inherit;
+        content: "";
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+      }
+
+      .wheel-label {
+        align-items: center;
+        display: inline-flex;
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+        font-size: 38px;
+        height: 48px;
+        justify-content: center;
+        line-height: 1.15;
+        pointer-events: none;
+        position: absolute;
+        text-shadow: 0 3px 10px rgba(39, 33, 29, 0.24);
+        transform: translate(-50%, -50%);
+        width: 48px;
+        z-index: 3;
+      }
+
+      .prize-wheel::after {
+        background: #fffdf8;
+        border-radius: 999px;
+        content: "";
+        height: 92px;
+        position: absolute;
+        width: 92px;
+      }
+
+      .wheel-center {
+        align-items: center;
+        background: #fffdf8;
+        border: 1px solid rgba(39, 33, 29, 0.12);
+        border-radius: 999px;
+        display: grid;
+        height: 84px;
+        justify-items: center;
+        position: relative;
+        width: 84px;
+        z-index: 2;
+      }
+
+      .wheel-center strong {
+        color: #e85050;
+        font-size: 30px;
+        line-height: 1;
+      }
+
+      .wheel-center span {
+        color: #6b5a50;
+        font-size: 10px;
+        font-weight: 900;
+      }
+
+      .wheel-options {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .option-chip {
+        align-items: center;
+        background: #fffaf4;
+        border: 1px solid rgba(39, 33, 29, 0.08);
+        border-radius: 8px;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 14px 34px minmax(0, 1fr);
+        min-height: 52px;
+        padding: 10px 12px;
+      }
+
+      .option-chip i {
+        border-radius: 999px;
+        display: block;
+        height: 12px;
+        width: 12px;
+      }
+
+      .option-chip span {
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+        font-size: 26px;
+        line-height: 1;
+      }
+
+      .option-chip strong {
+        font-size: 13px;
+        line-height: 1.25;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .workspace-grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 520px);
+        justify-content: center;
+        margin: 0 auto;
+        max-width: 1160px;
+        padding: 0 24px 52px;
+      }
+
+      .tool-panel {
+        background: #fffdf8;
+        border-radius: 8px;
+        padding: 24px;
+      }
+
+      .panel-heading {
+        align-items: center;
+        display: flex;
+        gap: 14px;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+
+      .result-box,
+      .empty-result {
+        background: #f6ede4;
+        border-radius: 8px;
+        margin-bottom: 14px;
+        padding: 18px;
+      }
+
+      .result-box {
+        display: grid;
+        gap: 8px;
+      }
+
+      .result-box span {
+        color: #6b5a50;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .result-box strong {
+        font-size: 28px;
+        line-height: 1.15;
+      }
+
+      .result-box p,
+      .empty-result,
+      .history-list p {
+        color: #6b5a50;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 0;
+      }
+
+      .history-list {
+        border-top: 1px solid rgba(39, 33, 29, 0.1);
+        padding-top: 18px;
+      }
+
+      .history-item {
+        align-items: center;
+        border-bottom: 1px solid rgba(39, 33, 29, 0.08);
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        padding: 12px 0;
+      }
+
+      .history-item strong {
+        font-size: 14px;
+      }
+
+      .history-item span {
+        color: #75675e;
+        font-size: 12px;
+      }
+
+      @media (max-width: 900px) {
+        .hero-shell {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .hero-shell {
+          gap: 16px;
+          min-height: auto;
+          padding: 18px 14px 14px;
+        }
+
+        .hero-copy,
+        .progress-panel,
+        .tool-panel {
+          padding: 18px;
+        }
+
+        .hero-copy,
+        .progress-panel {
+          min-height: 0;
+        }
+
+        h1 {
+          font-size: 42px;
+        }
+
+        .hero-text {
+          font-size: 16px;
+        }
+
+        .wheel-stage {
+          max-width: 280px;
+        }
+
+        .wheel-center {
+          height: 74px;
+          width: 74px;
+        }
+
+        .wheel-center strong {
+          font-size: 26px;
+        }
+
+        .wheel-label {
+          font-size: 32px;
+          height: 42px;
+          width: 42px;
+        }
+
+        .wheel-options {
+          grid-template-columns: 1fr;
+        }
+
+        .workspace-grid {
+          padding: 0 14px 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero-shell">
+        <div class="hero-copy">
+          <p class="eyebrow">兔兔酱</p>
+          <h1>抱佛脚事务所</h1>
+          <p class="hero-text">随机掉落。</p>
+          <button class="primary-button" id="drawButton" type="button">
+            <span class="button-art" aria-hidden="true">🍞</span>
+            <span id="drawButtonText">立刻开抽</span>
+          </button>
+          <p class="status-line" id="statusLine">正在检查她有没有偷偷抽过</p>
+        </div>
+
+        <div class="progress-panel" aria-label="一次性抽奖状态">
+          <div class="wheel-stage">
+            <div class="wheel-pointer"></div>
+            <div class="prize-wheel" id="wheel" aria-label="抽奖转盘">
+              <div class="wheel-center">
+                <strong id="centerText">抽</strong>
+                <span id="centerSubtext">ONE SHOT</span>
+              </div>
+            </div>
+          </div>
+          <div class="wheel-options" id="wheelOptions"></div>
+        </div>
+      </section>
+
+      <section class="workspace-grid">
+        <aside class="tool-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Result</p>
+              <h2>开奖结果</h2>
+            </div>
+          </div>
+          <div id="resultArea"></div>
+          <div class="history-list">
+            <h3>开奖记录</h3>
+            <div id="historyArea"><p>还没有记录。</p></div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script>
+      const STORAGE_KEY = "tutu-cram-lottery-github-v1";
+      const TOTAL_PROBABILITY = 100;
+      const SPIN_DURATION_MS = 10000;
+      const SPIN_TURNS = 6;
+
+      const defaultPrizes = [
+        { id: "iced-coffee", name: "冰咖啡兑换券", probability: 60, emoji: "☕️", color: "#de8f8a", active: true },
+        { id: "salmon-sashimi", name: "刺身三文鱼兑换券", probability: 20, emoji: "🍣", color: "#e8d37c", active: true },
+        { id: "thanks", name: "下次再来", probability: 10, emoji: "😊", color: "#8eb5de", active: true },
+        { id: "buddha-buffer", name: "佛脚抱得更稳了", probability: 10, emoji: "🙏", color: "#92c9a2", active: true },
+      ];
+
+      let state = {
+        hasDrawn: false,
+        result: null,
+        prizes: defaultPrizes,
+        history: [],
+      };
+      let isSpinning = false;
+      let wheelRotation = 0;
+
+      const wheel = document.getElementById("wheel");
+      const wheelOptions = document.getElementById("wheelOptions");
+      const drawButton = document.getElementById("drawButton");
+      const drawButtonText = document.getElementById("drawButtonText");
+      const statusLine = document.getElementById("statusLine");
+      const centerText = document.getElementById("centerText");
+      const centerSubtext = document.getElementById("centerSubtext");
+      const resultArea = document.getElementById("resultArea");
+      const historyArea = document.getElementById("historyArea");
+
+      function activePrizes() {
+        return [...state.prizes]
+          .filter((prize) => prize.active && prize.probability > 0)
+          .sort((a, b) => b.probability - a.probability);
+      }
+
+      function activePrizeTotal(prizes) {
+        return prizes.filter((prize) => prize.active).reduce((sum, prize) => sum + prize.probability, 0);
+      }
+
+      function pickPrize(prizes) {
+        const available = prizes.filter((prize) => prize.active && prize.probability > 0);
+        let cursor = Math.random() * TOTAL_PROBABILITY;
+
+        for (const prize of available) {
+          cursor -= prize.probability;
+          if (cursor < 0) return prize;
+        }
+
+        return available[available.length - 1] || null;
+      }
+
+      function getWheelCenterDegrees(prizes, id) {
+        const total = activePrizeTotal(prizes);
+        if (!prizes.length || total <= 0) return 0;
+
+        let cursor = 0;
+        for (const prize of prizes) {
+          const sweep = (prize.probability / total) * 360;
+          if (prize.id === id) {
+            const center = cursor + sweep / 2 - 90;
+            return (center + 360) % 360;
+          }
+          cursor += sweep;
+        }
+
+        return 0;
+      }
+
+      function getWheelLabelRadius(prizes, id) {
+        const total = activePrizeTotal(prizes);
+        const prize = prizes.find((item) => item.id === id);
+        if (!prize || total <= 0) return 30;
+        const sweep = (prize.probability / total) * 360;
+        return sweep < 45 ? 34 : 30;
+      }
+
+      function makeWheelGradient(prizes) {
+        const total = activePrizeTotal(prizes);
+        if (!prizes.length || total <= 0) {
+          return "conic-gradient(from -90deg, #efe5da 0deg 360deg)";
+        }
+
+        let cursor = 0;
+        const segments = prizes.map((prize) => {
+          const start = cursor;
+          const sweep = (prize.probability / total) * 360;
+          cursor += sweep;
+          return `${prize.color} ${start}deg ${cursor}deg`;
+        });
+
+        return `conic-gradient(from -90deg, ${segments.join(", ")})`;
+      }
+
+      function displayDate(value) {
+        return new Intl.DateTimeFormat("zh-CN", {
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(new Date(value));
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function restoreState() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (!stored) return;
+
+        try {
+          const parsed = JSON.parse(stored);
+          state = {
+            hasDrawn: Boolean(parsed.hasDrawn),
+            result: parsed.result || null,
+            prizes: Array.isArray(parsed.prizes) ? parsed.prizes : defaultPrizes,
+            history: Array.isArray(parsed.history) ? parsed.history : [],
+          };
+        } catch {
+          state.prizes = defaultPrizes;
+        }
+      }
+
+      function renderWheel() {
+        const prizes = activePrizes();
+        wheel.style.background = makeWheelGradient(prizes);
+        wheel.style.transform = `rotate(${wheelRotation}deg)`;
+
+        wheel.querySelectorAll(".wheel-label").forEach((item) => item.remove());
+        prizes.forEach((prize) => {
+          const center = getWheelCenterDegrees(prizes, prize.id);
+          const angle = center - 90;
+          const radians = (angle * Math.PI) / 180;
+          const radius = getWheelLabelRadius(prizes, prize.id);
+          const label = document.createElement("span");
+          label.className = "wheel-label";
+          label.textContent = prize.emoji;
+          label.style.left = `${50 + Math.cos(radians) * radius}%`;
+          label.style.top = `${50 + Math.sin(radians) * radius}%`;
+          wheel.insertBefore(label, wheel.querySelector(".wheel-center"));
+        });
+
+        wheelOptions.innerHTML = prizes.map((prize) => `
+          <div class="option-chip">
+            <i style="background: ${prize.color}"></i>
+            <span>${prize.emoji}</span>
+            <strong>${prize.name}</strong>
+          </div>
+        `).join("");
+      }
+
+      function renderResult() {
+        if (state.result) {
+          resultArea.innerHTML = `
+            <div class="result-box">
+              <span>佛脚批示</span>
+              <strong>${state.result.name}</strong>
+              <p>本次抽奖已经锁定，刷新页面也会保留结果。</p>
+            </div>
+          `;
+        } else {
+          resultArea.innerHTML = `<div class="empty-result">还没开奖。她点下按钮之前，宇宙还在装作很公平。</div>`;
+        }
+
+        if (state.history.length === 0) {
+          historyArea.innerHTML = `<p>还没有记录。</p>`;
+        } else {
+          historyArea.innerHTML = state.history.slice(0, 3).map((record) => `
+            <div class="history-item">
+              <strong>${record.prizeName}</strong>
+              <span>${displayDate(record.date)}</span>
+            </div>
+          `).join("");
+        }
+      }
+
+      function renderStatus() {
+        const activeTotal = activePrizeTotal(state.prizes);
+        drawButton.disabled = isSpinning || state.hasDrawn || activeTotal !== TOTAL_PROBABILITY;
+        drawButtonText.textContent = isSpinning ? "转盘施法中" : "立刻开抽";
+        centerText.textContent = state.hasDrawn ? "0" : "抽";
+        centerSubtext.textContent = isSpinning ? "转动中" : "ONE SHOT";
+
+        if (isSpinning) {
+          statusLine.textContent = "转盘正在施法，10 秒后揭晓。";
+        } else if (state.hasDrawn) {
+          statusLine.textContent = "本次佛脚抽奖已经结束，刷新也不能再抽。";
+        } else if (activeTotal !== TOTAL_PROBABILITY) {
+          statusLine.textContent = `当前概率合计 ${activeTotal}%，调到 100% 才能开抽。`;
+        } else {
+          statusLine.textContent = "抱佛脚资格已到账，只能抽一次。";
+        }
+      }
+
+      function render() {
+        renderWheel();
+        renderResult();
+        renderStatus();
+      }
+
+      function settleStoredResult() {
+        if (!state.result) return;
+        const prizes = activePrizes();
+        const center = getWheelCenterDegrees(prizes, state.result.id);
+        wheelRotation = 360 - center;
+      }
+
+      function draw() {
+        if (isSpinning || state.hasDrawn) return;
+        const prizes = activePrizes();
+        const prize = pickPrize(state.prizes);
+        if (!prize) return;
+
+        isSpinning = true;
+        state.result = null;
+        const center = getWheelCenterDegrees(prizes, prize.id);
+        const currentOffset = ((wheelRotation % 360) + 360) % 360;
+        wheelRotation = wheelRotation - currentOffset + SPIN_TURNS * 360 + (360 - center);
+        render();
+
+        const record = {
+          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+          prizeName: prize.name,
+          date: new Date().toISOString(),
+        };
+
+        window.setTimeout(() => {
+          state.result = prize;
+          state.hasDrawn = true;
+          state.history = [record, ...state.history];
+          isSpinning = false;
+          saveState();
+          render();
+        }, SPIN_DURATION_MS);
+      }
+
+      drawButton.addEventListener("click", draw);
+      restoreState();
+      settleStoredResult();
+      render();
+    </script>
+  </body>
+</html>
