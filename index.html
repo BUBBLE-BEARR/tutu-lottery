@@ -351,6 +351,154 @@
         font-size: 12px;
       }
 
+      .modal-backdrop {
+        align-items: center;
+        background: rgba(39, 33, 29, 0.38);
+        display: none;
+        inset: 0;
+        justify-content: center;
+        padding: 22px;
+        position: fixed;
+        z-index: 20;
+      }
+
+      .modal-backdrop.is-open {
+        display: flex;
+      }
+
+      .result-modal-card {
+        background:
+          radial-gradient(circle at 18% 12%, rgba(255, 245, 179, 0.95), transparent 24%),
+          radial-gradient(circle at 82% 16%, rgba(190, 221, 255, 0.8), transparent 22%),
+          #fffdf8;
+        border: 1px solid rgba(39, 33, 29, 0.12);
+        border-radius: 8px;
+        box-shadow: 0 30px 90px rgba(39, 33, 29, 0.28);
+        display: grid;
+        justify-items: center;
+        max-width: 420px;
+        overflow: hidden;
+        padding: 32px 26px 24px;
+        position: relative;
+        text-align: center;
+        transform: scale(0.92);
+      }
+
+      .modal-backdrop.is-open .result-modal-card {
+        animation: modal-pop 520ms cubic-bezier(0.2, 1.25, 0.2, 1) forwards;
+      }
+
+      .result-modal-card::before {
+        background: conic-gradient(from 0deg, transparent, rgba(255, 209, 92, 0.5), transparent, rgba(142, 181, 222, 0.45), transparent);
+        content: "";
+        height: 260px;
+        opacity: 0.7;
+        position: absolute;
+        top: -116px;
+        width: 260px;
+        z-index: 0;
+      }
+
+      .modal-sparkle {
+        font-size: 24px;
+        position: absolute;
+        z-index: 1;
+      }
+
+      .modal-sparkle:nth-child(1) {
+        animation: sparkle-fall 980ms ease-out infinite alternate;
+        left: 36px;
+        top: 32px;
+      }
+
+      .modal-sparkle:nth-child(2) {
+        animation: sparkle-fall 1100ms 120ms ease-out infinite alternate;
+        right: 38px;
+        top: 44px;
+      }
+
+      .modal-sparkle:nth-child(3) {
+        animation: sparkle-fall 900ms 80ms ease-out infinite alternate;
+        right: 72px;
+        top: 112px;
+      }
+
+      .modal-eyebrow,
+      .modal-prize-emoji,
+      .modal-title,
+      .modal-copy,
+      .modal-confirm {
+        position: relative;
+        z-index: 2;
+      }
+
+      .modal-eyebrow {
+        color: #85624e;
+        font-size: 12px;
+        font-weight: 900;
+        margin-bottom: 12px;
+      }
+
+      .modal-prize-emoji {
+        align-items: center;
+        background: #fff7e7;
+        border: 1px solid rgba(39, 33, 29, 0.08);
+        border-radius: 999px;
+        display: flex;
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+        font-size: 48px;
+        height: 86px;
+        justify-content: center;
+        margin-bottom: 16px;
+        width: 86px;
+      }
+
+      .modal-title {
+        font-size: 26px;
+        line-height: 1.2;
+        margin-bottom: 10px;
+      }
+
+      .modal-copy {
+        color: #6b5a50;
+        font-size: 15px;
+        line-height: 1.7;
+        margin-bottom: 22px;
+      }
+
+      .modal-confirm {
+        background: #2f6f61;
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 900;
+        min-height: 46px;
+        padding: 0 28px;
+      }
+
+      @keyframes modal-pop {
+        0% {
+          opacity: 0;
+          transform: scale(0.88) translateY(12px);
+        }
+
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      @keyframes sparkle-fall {
+        0% {
+          opacity: 0.35;
+          transform: translateY(-4px) rotate(-8deg) scale(0.9);
+        }
+
+        100% {
+          opacity: 1;
+          transform: translateY(8px) rotate(10deg) scale(1.08);
+        }
+      }
+
       @media (max-width: 900px) {
         .hero-shell {
           grid-template-columns: 1fr;
@@ -457,6 +605,19 @@
       </section>
     </main>
 
+    <div class="modal-backdrop" id="resultModal" aria-hidden="true">
+      <section class="result-modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <span class="modal-sparkle" aria-hidden="true">✨</span>
+        <span class="modal-sparkle" aria-hidden="true">🎉</span>
+        <span class="modal-sparkle" aria-hidden="true">✨</span>
+        <p class="modal-eyebrow">开奖啦</p>
+        <div class="modal-prize-emoji" id="modalEmoji" aria-hidden="true">🎁</div>
+        <h2 class="modal-title" id="modalTitle">随机掉落</h2>
+        <p class="modal-copy" id="modalCopy">佛脚正在盖章。</p>
+        <button class="modal-confirm" id="modalConfirm" type="button">确认</button>
+      </section>
+    </div>
+
     <script>
       const STORAGE_KEY = "tutu-cram-lottery-github-prizes-v3";
       const TOTAL_PROBABILITY = 100;
@@ -491,6 +652,7 @@
         history: [],
       };
       let isSpinning = false;
+      let pendingRetryReset = false;
       let wheelRotation = 0;
 
       const wheel = document.getElementById("wheel");
@@ -502,6 +664,11 @@
       const centerSubtext = document.getElementById("centerSubtext");
       const resultArea = document.getElementById("resultArea");
       const historyArea = document.getElementById("historyArea");
+      const resultModal = document.getElementById("resultModal");
+      const modalEmoji = document.getElementById("modalEmoji");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalCopy = document.getElementById("modalCopy");
+      const modalConfirm = document.getElementById("modalConfirm");
 
       function activePrizes() {
         return [...state.prizes]
@@ -677,6 +844,31 @@
         }
       }
 
+      function showResultModal(prize) {
+        pendingRetryReset = prize.id === "retry";
+        modalEmoji.textContent = prize.emoji;
+        modalTitle.textContent = prize.name;
+        modalCopy.textContent = pendingRetryReset
+          ? "恭喜获得再抽一次。点确认之后，本次机会自动续上。"
+          : "恭喜随机掉落成功。本次结果已经盖章。";
+        resultModal.classList.add("is-open");
+        resultModal.setAttribute("aria-hidden", "false");
+        modalConfirm.focus();
+      }
+
+      function closeResultModal() {
+        resultModal.classList.remove("is-open");
+        resultModal.setAttribute("aria-hidden", "true");
+
+        if (pendingRetryReset) {
+          pendingRetryReset = false;
+          state.hasDrawn = false;
+          state.result = null;
+          saveState();
+          render();
+        }
+      }
+
       function render() {
         renderWheel();
         renderResult();
@@ -716,10 +908,12 @@
           isSpinning = false;
           saveState();
           render();
+          showResultModal(prize);
         }, SPIN_DURATION_MS);
       }
 
       drawButton.addEventListener("click", draw);
+      modalConfirm.addEventListener("click", closeResultModal);
       resetIfRequested();
       restoreState();
       settleStoredResult();
