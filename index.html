@@ -187,15 +187,15 @@
         align-items: center;
         display: inline-flex;
         font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
-        font-size: 38px;
-        height: 48px;
+        font-size: 30px;
+        height: 40px;
         justify-content: center;
         line-height: 1.15;
         pointer-events: none;
         position: absolute;
         text-shadow: 0 3px 10px rgba(39, 33, 29, 0.24);
         transform: translate(-50%, -50%);
-        width: 48px;
+        width: 40px;
         z-index: 3;
       }
 
@@ -397,9 +397,9 @@
         }
 
         .wheel-label {
-          font-size: 32px;
-          height: 42px;
-          width: 42px;
+          font-size: 27px;
+          height: 36px;
+          width: 36px;
         }
 
         .wheel-options {
@@ -458,16 +458,20 @@
     </main>
 
     <script>
-      const STORAGE_KEY = "tutu-cram-lottery-local-file-v1";
+      const STORAGE_KEY = "tutu-cram-lottery-github-prizes-v2";
       const TOTAL_PROBABILITY = 100;
       const SPIN_DURATION_MS = 10000;
       const SPIN_TURNS = 6;
 
       const defaultPrizes = [
-        { id: "iced-coffee", name: "冰咖啡兑换券", probability: 60, emoji: "☕️", color: "#de8f8a", active: true },
-        { id: "salmon-sashimi", name: "刺身三文鱼兑换券", probability: 20, emoji: "🍣", color: "#e8d37c", active: true },
-        { id: "thanks", name: "下次再来", probability: 10, emoji: "😊", color: "#8eb5de", active: true },
-        { id: "buddha-buffer", name: "佛脚抱得更稳了", probability: 10, emoji: "🙏", color: "#92c9a2", active: true },
+        { id: "iced-coffee", name: "冰咖啡兑换券", probability: 40, emoji: "☕️", color: "#d98d88", active: true },
+        { id: "buddha-buffer", name: "佛脚抱得更稳了", probability: 20, emoji: "🙏", color: "#92c9a2", active: true },
+        { id: "mini-cake", name: "小蛋糕", probability: 10, emoji: "🍰", color: "#efcf82", active: true },
+        { id: "salmon-sashimi", name: "刺身三文鱼兑换券", probability: 10, emoji: "🍣", color: "#e7a27e", active: true },
+        { id: "retry", name: "再抽一次", probability: 10, emoji: "🔁", color: "#8eb5de", active: true },
+        { id: "jellycat", name: "Jellycat", probability: 5, emoji: "🧸", color: "#c5abd9", active: true },
+        { id: "thai-doll", name: "泰百娃娃", probability: 4, emoji: "🎀", color: "#efaac2", active: true },
+        { id: "pocket3", name: "Pocket 3", probability: 1, emoji: "📹", color: "#9fd5cf", active: true },
       ];
 
       let state = {
@@ -512,40 +516,27 @@
       }
 
       function getWheelCenterDegrees(prizes, id) {
-        const total = activePrizeTotal(prizes);
-        if (!prizes.length || total <= 0) return 0;
-
-        let cursor = 0;
-        for (const prize of prizes) {
-          const sweep = (prize.probability / total) * 360;
-          if (prize.id === id) {
-            const center = cursor + sweep / 2 - 90;
-            return (center + 360) % 360;
-          }
-          cursor += sweep;
-        }
-
-        return 0;
+        if (!prizes.length) return 0;
+        const index = prizes.findIndex((prize) => prize.id === id);
+        if (index < 0) return 0;
+        const sweep = 360 / prizes.length;
+        const center = index * sweep + sweep / 2 - 90;
+        return (center + 360) % 360;
       }
 
-      function getWheelLabelRadius(prizes, id) {
-        const total = activePrizeTotal(prizes);
-        const prize = prizes.find((item) => item.id === id);
-        if (!prize || total <= 0) return 30;
-        const sweep = (prize.probability / total) * 360;
-        return sweep < 45 ? 34 : 30;
+      function getWheelLabelRadius() {
+        return 32;
       }
 
       function makeWheelGradient(prizes) {
-        const total = activePrizeTotal(prizes);
-        if (!prizes.length || total <= 0) {
+        if (!prizes.length) {
           return "conic-gradient(from -90deg, #efe5da 0deg 360deg)";
         }
 
         let cursor = 0;
+        const sweep = 360 / prizes.length;
         const segments = prizes.map((prize) => {
           const start = cursor;
-          const sweep = (prize.probability / total) * 360;
           cursor += sweep;
           return `${prize.color} ${start}deg ${cursor}deg`;
         });
@@ -583,6 +574,22 @@
         }
       }
 
+      function resetIfRequested() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("reset") !== "1") return;
+        localStorage.removeItem(STORAGE_KEY);
+        state = {
+          hasDrawn: false,
+          result: null,
+          prizes: defaultPrizes,
+          history: [],
+        };
+        params.delete("reset");
+        const nextSearch = params.toString();
+        const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`;
+        window.history.replaceState(null, "", nextUrl);
+      }
+
       function renderWheel() {
         const prizes = activePrizes();
         wheel.style.background = makeWheelGradient(prizes);
@@ -593,7 +600,7 @@
           const center = getWheelCenterDegrees(prizes, prize.id);
           const angle = center - 90;
           const radians = (angle * Math.PI) / 180;
-          const radius = getWheelLabelRadius(prizes, prize.id);
+          const radius = getWheelLabelRadius();
           const label = document.createElement("span");
           label.className = "wheel-label";
           label.textContent = prize.emoji;
@@ -697,6 +704,7 @@
       }
 
       drawButton.addEventListener("click", draw);
+      resetIfRequested();
       restoreState();
       settleStoredResult();
       render();
