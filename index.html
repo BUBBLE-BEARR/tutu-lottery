@@ -458,10 +458,20 @@
     </main>
 
     <script>
-      const STORAGE_KEY = "tutu-cram-lottery-github-prizes-v2";
+      const STORAGE_KEY = "tutu-cram-lottery-github-prizes-v3";
       const TOTAL_PROBABILITY = 100;
       const SPIN_DURATION_MS = 10000;
       const SPIN_TURNS = 6;
+      const WHEEL_ORDER = [
+        "pocket3",
+        "iced-coffee",
+        "jellycat",
+        "buddha-buffer",
+        "thai-doll",
+        "mini-cake",
+        "salmon-sashimi",
+        "retry",
+      ];
 
       const defaultPrizes = [
         { id: "iced-coffee", name: "冰咖啡兑换券", probability: 40, emoji: "☕️", color: "#d98d88", active: true },
@@ -496,7 +506,13 @@
       function activePrizes() {
         return [...state.prizes]
           .filter((prize) => prize.active && prize.probability > 0)
-          .sort((a, b) => b.probability - a.probability);
+          .sort((a, b) => {
+            const aIndex = WHEEL_ORDER.indexOf(a.id);
+            const bIndex = WHEEL_ORDER.indexOf(b.id);
+            const safeAIndex = aIndex < 0 ? Number.MAX_SAFE_INTEGER : aIndex;
+            const safeBIndex = bIndex < 0 ? Number.MAX_SAFE_INTEGER : bIndex;
+            return safeAIndex - safeBIndex;
+          });
       }
 
       function activePrizeTotal(prizes) {
