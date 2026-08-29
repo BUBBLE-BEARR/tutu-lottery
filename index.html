@@ -170,7 +170,7 @@
         justify-content: center;
         max-width: 310px;
         position: relative;
-        transition: transform 10s cubic-bezier(0.06, 0.84, 0.08, 1);
+        transition: transform 15s cubic-bezier(0.04, 0.86, 0.08, 1);
         width: 100%;
       }
 
@@ -619,9 +619,9 @@
     </div>
 
     <script>
-      const STORAGE_KEY = "tutu-cram-lottery-github-prizes-v3";
+      const STORAGE_KEY = "tutu-cram-lottery-github-prizes-v4";
       const TOTAL_PROBABILITY = 100;
-      const SPIN_DURATION_MS = 10000;
+      const SPIN_DURATION_MS = 15000;
       const SPIN_TURNS = 6;
       const WHEEL_ORDER = [
         "pocket3",
@@ -629,20 +629,22 @@
         "jellycat",
         "buddha-buffer",
         "thai-doll",
-        "mini-cake",
-        "salmon-sashimi",
         "retry",
+        "salmon-sashimi",
+        "mini-cake",
+        "kiss",
       ];
 
       const defaultPrizes = [
         { id: "iced-coffee", name: "冰咖啡兑换券", probability: 40, emoji: "☕️", color: "#d98d88", active: true },
         { id: "buddha-buffer", name: "佛脚抱得更稳了", probability: 20, emoji: "🙏", color: "#92c9a2", active: true },
-        { id: "mini-cake", name: "小蛋糕", probability: 10, emoji: "🍰", color: "#efcf82", active: true },
-        { id: "salmon-sashimi", name: "刺身三文鱼兑换券", probability: 10, emoji: "🍣", color: "#e7a27e", active: true },
+        { id: "mini-cake", name: "小蛋糕", probability: 0, emoji: "🍰", color: "#efcf82", active: true },
+        { id: "salmon-sashimi", name: "刺身三文鱼兑换券", probability: 20, emoji: "🍣", color: "#e7a27e", active: true },
         { id: "retry", name: "再抽一次", probability: 10, emoji: "🔁", color: "#8eb5de", active: true },
         { id: "jellycat", name: "Jellycat", probability: 5, emoji: "🧸", color: "#c5abd9", active: true },
         { id: "thai-doll", name: "泰百娃娃", probability: 4, emoji: "🎀", color: "#efaac2", active: true },
         { id: "pocket3", name: "Pocket 3", probability: 1, emoji: "📹", color: "#9fd5cf", active: true },
+        { id: "kiss", name: "卷卷的香吻", probability: 0, emoji: "👄", color: "#e99aaa", active: true },
       ];
 
       let state = {
@@ -672,7 +674,7 @@
 
       function activePrizes() {
         return [...state.prizes]
-          .filter((prize) => prize.active && prize.probability > 0)
+          .filter((prize) => prize.active)
           .sort((a, b) => {
             const aIndex = WHEEL_ORDER.indexOf(a.id);
             const bIndex = WHEEL_ORDER.indexOf(b.id);
@@ -834,7 +836,7 @@
         centerSubtext.textContent = isSpinning ? "转动中" : "ONE SHOT";
 
         if (isSpinning) {
-          statusLine.textContent = "转盘正在施法，10 秒后揭晓。";
+          statusLine.textContent = "转盘正在施法，15 秒后揭晓。";
         } else if (state.hasDrawn) {
           statusLine.textContent = "本次佛脚抽奖已经结束，刷新也不能再抽。";
         } else if (activeTotal !== TOTAL_PROBABILITY) {
