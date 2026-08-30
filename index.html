@@ -619,20 +619,21 @@
     </div>
 
     <script>
-      const STORAGE_KEY = "tutu-cram-lottery-github-prizes-20260830";
+      const STORAGE_KEY = "tutu-cram-lottery-github-prizes-20260830-salmon100-kiss-before";
       const TOTAL_PROBABILITY = 100;
       const SPIN_DURATION_MS = 15000;
       const SPIN_TURNS = 6;
+      const GUARANTEED_PRIZE_ID = "salmon-sashimi";
       const WHEEL_ORDER = [
         "pocket3",
         "iced-coffee",
         "jellycat",
         "buddha-buffer",
         "salmon-sashimi",
+        "kiss",
         "thai-doll",
         "retry",
         "mini-cake",
-        "kiss",
       ];
 
       const defaultPrizes = [
@@ -689,6 +690,9 @@
       }
 
       function pickPrize(prizes) {
+        const guaranteed = prizes.find((prize) => prize.id === GUARANTEED_PRIZE_ID && prize.active);
+        if (guaranteed) return guaranteed;
+
         const available = prizes.filter((prize) => prize.active && prize.probability > 0);
         let cursor = Math.random() * TOTAL_PROBABILITY;
 
@@ -751,7 +755,7 @@
           state = {
             hasDrawn: Boolean(parsed.hasDrawn),
             result: parsed.result || null,
-            prizes: Array.isArray(parsed.prizes) ? parsed.prizes : defaultPrizes,
+            prizes: defaultPrizes,
             history: Array.isArray(parsed.history) ? parsed.history : [],
           };
         } catch {
