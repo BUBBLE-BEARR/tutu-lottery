@@ -653,7 +653,6 @@
 
     <script>
       const PAGE_SUFFIX = "0902";
-      const BLOCKED_PAGE_SUFFIXES = ["0901"];
       const STORAGE_KEY = `tutu-cram-lottery-github-prizes-${PAGE_SUFFIX}`;
       const TOTAL_PROBABILITY = 100;
       const SPIN_DURATION_MS = 15000;
@@ -682,14 +681,13 @@
         { id: "kiss", name: "卷卷的香吻", probability: 0, emoji: "👄", color: "#e99aaa", active: true },
       ];
 
-      function isBlockedSuffix(params, suffix) {
-        return params.has(suffix) || params.get("day") === suffix;
+      function hasAllowedSuffix(params) {
+        return params.has(PAGE_SUFFIX) || params.get("day") === PAGE_SUFFIX;
       }
 
       function blockExpiredLinkIfNeeded() {
         const params = new URLSearchParams(window.location.search);
-        const shouldBlock = BLOCKED_PAGE_SUFFIXES.some((suffix) => isBlockedSuffix(params, suffix));
-        if (!shouldBlock) return false;
+        if (hasAllowedSuffix(params)) return false;
 
         document.title = "链接已失效";
         document.body.innerHTML = `
