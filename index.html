@@ -619,11 +619,10 @@
     </div>
 
     <script>
-      const STORAGE_KEY = "tutu-cram-lottery-github-prizes-0830";
+      const STORAGE_KEY = "tutu-cram-lottery-github-prizes-0901";
       const TOTAL_PROBABILITY = 100;
       const SPIN_DURATION_MS = 15000;
       const SPIN_TURNS = 6;
-      const GUARANTEED_PRIZE_ID = "salmon-sashimi";
       const WHEEL_ORDER = [
         "pocket3",
         "iced-coffee",
@@ -637,14 +636,14 @@
       ];
 
       const defaultPrizes = [
-        { id: "iced-coffee", name: "冰咖啡兑换券", probability: 0, emoji: "☕️", color: "#d98d88", active: true },
-        { id: "buddha-buffer", name: "佛脚抱得更稳了", probability: 0, emoji: "🙏", color: "#92c9a2", active: true },
+        { id: "iced-coffee", name: "冰咖啡兑换券", probability: 40, emoji: "☕️", color: "#d98d88", active: true },
+        { id: "buddha-buffer", name: "佛脚抱得更稳了", probability: 20, emoji: "🙏", color: "#92c9a2", active: true },
         { id: "mini-cake", name: "小蛋糕", probability: 0, emoji: "🍰", color: "#efcf82", active: true },
-        { id: "salmon-sashimi", name: "刺身三文鱼兑换券", probability: 100, emoji: "🍣", color: "#e7a27e", active: true },
-        { id: "retry", name: "再抽一次", probability: 0, emoji: "🔁", color: "#8eb5de", active: true },
-        { id: "jellycat", name: "Jellycat", probability: 0, emoji: "🧸", color: "#c5abd9", active: true },
-        { id: "thai-doll", name: "泰百娃娃", probability: 0, emoji: "🎀", color: "#efaac2", active: true },
-        { id: "pocket3", name: "Pocket 3", probability: 0, emoji: "📹", color: "#9fd5cf", active: true },
+        { id: "salmon-sashimi", name: "刺身三文鱼兑换券", probability: 20, emoji: "🍣", color: "#e7a27e", active: true },
+        { id: "retry", name: "再抽一次", probability: 10, emoji: "🔁", color: "#8eb5de", active: true },
+        { id: "jellycat", name: "Jellycat", probability: 5, emoji: "🧸", color: "#c5abd9", active: true },
+        { id: "thai-doll", name: "泰百娃娃", probability: 4, emoji: "🎀", color: "#efaac2", active: true },
+        { id: "pocket3", name: "Pocket 3", probability: 1, emoji: "📹", color: "#9fd5cf", active: true },
         { id: "kiss", name: "卷卷的香吻", probability: 0, emoji: "👄", color: "#e99aaa", active: true },
       ];
 
@@ -690,9 +689,6 @@
       }
 
       function pickPrize(prizes) {
-        const guaranteed = prizes.find((prize) => prize.id === GUARANTEED_PRIZE_ID && prize.active);
-        if (guaranteed) return guaranteed;
-
         const available = prizes.filter((prize) => prize.active && prize.probability > 0);
         let cursor = Math.random() * TOTAL_PROBABILITY;
 
