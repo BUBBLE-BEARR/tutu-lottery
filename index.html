@@ -130,6 +130,39 @@
         margin: 14px 0 0;
       }
 
+      .expired-shell {
+        align-content: center;
+        background:
+          linear-gradient(90deg, rgba(255, 250, 240, 0.94), rgba(255, 250, 240, 0.68)),
+          url("./hero-background.jpg") center / cover;
+        display: grid;
+        min-height: 100vh;
+        padding: 28px;
+      }
+
+      .expired-panel {
+        background: rgba(255, 253, 248, 0.94);
+        border: 1px solid rgba(39, 33, 29, 0.12);
+        border-radius: 8px;
+        box-shadow: 0 24px 70px rgba(50, 39, 28, 0.16);
+        max-width: 520px;
+        padding: 30px;
+      }
+
+      .expired-panel strong {
+        display: block;
+        font-size: 34px;
+        line-height: 1.15;
+        margin-bottom: 14px;
+      }
+
+      .expired-panel p {
+        color: #6b5a50;
+        font-size: 16px;
+        line-height: 1.7;
+        margin-bottom: 0;
+      }
+
       .progress-panel {
         align-content: center;
         background: #fffdf8;
@@ -619,7 +652,9 @@
     </div>
 
     <script>
-      const STORAGE_KEY = "tutu-cram-lottery-github-prizes-0901";
+      const PAGE_SUFFIX = "0902";
+      const BLOCKED_PAGE_SUFFIXES = ["0901"];
+      const STORAGE_KEY = `tutu-cram-lottery-github-prizes-${PAGE_SUFFIX}`;
       const TOTAL_PROBABILITY = 100;
       const SPIN_DURATION_MS = 15000;
       const SPIN_TURNS = 6;
@@ -646,6 +681,32 @@
         { id: "pocket3", name: "Pocket 3", probability: 1, emoji: "📹", color: "#9fd5cf", active: true },
         { id: "kiss", name: "卷卷的香吻", probability: 0, emoji: "👄", color: "#e99aaa", active: true },
       ];
+
+      function isBlockedSuffix(params, suffix) {
+        return params.has(suffix) || params.get("day") === suffix;
+      }
+
+      function blockExpiredLinkIfNeeded() {
+        const params = new URLSearchParams(window.location.search);
+        const shouldBlock = BLOCKED_PAGE_SUFFIXES.some((suffix) => isBlockedSuffix(params, suffix));
+        if (!shouldBlock) return false;
+
+        document.title = "链接已失效";
+        document.body.innerHTML = `
+          <main class="expired-shell">
+            <section class="expired-panel">
+              <p class="eyebrow">Expired</p>
+              <strong>这个抽奖链接已经失效</strong>
+              <p>今日抽奖入口已更新，这个旧链接不能再打开。</p>
+            </section>
+          </main>
+        `;
+        return true;
+      }
+
+      if (blockExpiredLinkIfNeeded()) {
+        throw new Error("Expired lottery link");
+      }
 
       let state = {
         hasDrawn: false,
