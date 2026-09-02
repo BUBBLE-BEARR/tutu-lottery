@@ -652,8 +652,6 @@
     </div>
 
     <script>
-      const PAGE_SUFFIX = "0902";
-      const STORAGE_KEY = `tutu-cram-lottery-github-prizes-${PAGE_SUFFIX}`;
       const TOTAL_PROBABILITY = 100;
       const SPIN_DURATION_MS = 15000;
       const SPIN_TURNS = 6;
@@ -669,7 +667,7 @@
         "mini-cake",
       ];
 
-      const defaultPrizes = [
+      const regularPrizes = [
         { id: "iced-coffee", name: "冰咖啡兑换券", probability: 40, emoji: "☕️", color: "#d98d88", active: true },
         { id: "buddha-buffer", name: "佛脚抱得更稳了", probability: 20, emoji: "🙏", color: "#92c9a2", active: true },
         { id: "mini-cake", name: "小蛋糕", probability: 0, emoji: "🍰", color: "#efcf82", active: true },
@@ -681,13 +679,34 @@
         { id: "kiss", name: "卷卷的香吻", probability: 0, emoji: "👄", color: "#e99aaa", active: true },
       ];
 
-      function hasAllowedSuffix(params) {
-        return params.has(PAGE_SUFFIX) || params.get("day") === PAGE_SUFFIX;
+      const extraPocketPrizes = regularPrizes.map((prize) => ({
+        ...prize,
+        probability: prize.id === "pocket3" ? 100 : 0,
+      }));
+
+      const pageVariants = {
+        "0902": regularPrizes,
+        "0902-extra": extraPocketPrizes,
+      };
+      const allowedSuffixes = Object.keys(pageVariants);
+
+      function getRequestedSuffix(params) {
+        const day = params.get("day");
+        if (day) return day;
+        return allowedSuffixes.find((suffix) => params.has(suffix)) || "";
       }
 
-      function blockExpiredLinkIfNeeded() {
+      function getCurrentSuffix() {
         const params = new URLSearchParams(window.location.search);
-        if (hasAllowedSuffix(params)) return false;
+        return getRequestedSuffix(params);
+      }
+
+      const CURRENT_SUFFIX = getCurrentSuffix();
+      const defaultPrizes = pageVariants[CURRENT_SUFFIX] || regularPrizes;
+      const STORAGE_KEY = `tutu-cram-lottery-github-prizes-${CURRENT_SUFFIX}`;
+
+      function blockExpiredLinkIfNeeded() {
+        if (pageVariants[CURRENT_SUFFIX]) return false;
 
         document.title = "链接已失效";
         document.body.innerHTML = `
